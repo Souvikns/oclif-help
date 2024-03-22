@@ -29,7 +29,7 @@
   },
   "oclif": {
     "bin": "oclif",
-    "commands": "./lib/commands"
-    
+    "commands": "./lib/commands",
+    "helpClass": "./lib/customHelp.js"
   }
 }

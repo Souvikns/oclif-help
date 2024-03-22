@@ -1,6 +1,8 @@
 import { Command, Help } from '@oclif/core'
 import { SINGLE_COMMAND_CLI_SYMBOL } from '@oclif/core/lib/symbols'
 import { Config } from '@oclif/core/lib/interfaces'
+import { colorize } from '@oclif/core/lib/cli-ux'
+import stripAnsi from 'strip-ansi'
 
 export default class CustomHelp extends Help {
   async showHelp(argv: string[]): Promise<void> {
@@ -9,9 +11,6 @@ export default class CustomHelp extends Help {
       (arg) => !getHelpFlagAdditions(this.config).includes(arg)
     )
     const subject = getHelpSubject(argv, this.config)
-    console.log(originalArgv, argv, subject)
-    // Figure out what to print, rootHelp or commandHelp
-
     if (!subject) {
       if (this.config.isSingleCommandCLI) {
         const roodCmd = this.config.findCommand(SINGLE_COMMAND_CLI_SYMBOL)
@@ -37,9 +36,70 @@ export default class CustomHelp extends Help {
     console.log(command.id)
   }
 
-  protected async showRootHelp(): Promise<void> {
-    this.log('Root help')
-    console.log(this.sortedCommands, this.sortedTopics)
+  async showRootHelp(): Promise<void> {
+    let rootTopics = this.sortedTopics
+    let rootCommands = this.sortedCommands
+
+    const state = this.config.pjson?.oclif?.state
+    if (state) {
+      this.log(
+        state === 'deprecated'
+          ? `${this.config.bin} is deprecated`
+          : `${this.config.bin} is in ${state}.\n`
+      )
+    }
+
+    this.log(this.formatRoot())
+    this.log('')
+
+    if (!this.opts.all) {
+      rootTopics = rootTopics.filter((t) => !t.name.includes(':'))
+      rootCommands = rootCommands.filter((c) => !c.id.includes(':'))
+    }
+
+    if (rootTopics.length > 0) {
+      this.log(this.formatTopics(rootTopics))
+      this.log('')
+    }
+
+    if (rootCommands.length > 0) {
+      rootCommands = rootCommands.filter((c) => c.id)
+      this.log(this.formatCommands(rootCommands))
+      this.log('')
+    }
+  }
+  protected formatCommands(commands: Command.Loadable[]): string {
+    if (commands.length === 0) return ''
+    // const body = this.renderList(
+    //   commands
+    //   .filter((c) => this.opts.hideAliasesFromRoot? !c.aliases?.includes(c.id): true)
+    //   .map((c)=> {
+    //     if (this.config.topicSeparator !== ':') c.id = c.id.replaceAll(':', this.config.topicSeparator)
+    //     const summary = this.summary(c)
+    //   return [
+    //     colorize(this.config?.theme?.command, c.id),
+    //     summary && colorize(this.config?.theme?.sectionDescription, stripAnsi(summary))
+    //   ]
+    //   }),{
+    //     indentation: 2,
+    //     spacer: '\n',
+    //     stripAnsi: this.opts.stripAnsi
+    //   }
+    // )
+    const body = this.renderList(
+      commands
+        .filter((c) =>
+          this.opts.hideAliasesFromRoot ? !c.aliases?.includes(c.id) : true
+        )
+        .map((c) => {
+          if (this.config.topicSeparator !== ':')
+            c.id.replaceAll(':', this.config.topicSeparator)
+          const summary = this.summary(c)
+          return [colorize('magenta', c.id), summary]
+        }),
+      { indentation: 2, spacer: '\n', stripAnsi: this.opts.stripAnsi }
+    )
+    return this.section(colorize('cyan', 'COMMANDS'), body)
   }
 }
 

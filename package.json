@@ -25,7 +25,8 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
-    "@oclif/core": "^3.25.3"
+    "@oclif/core": "^3.25.3",
+    "strip-ansi": "^7.1.0"
   },
   "oclif": {
     "bin": "oclif",

@@ -30,5 +30,6 @@
   "oclif": {
     "bin": "oclif",
     "commands": "./lib/commands"
+    
   }
 }

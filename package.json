@@ -1,0 +1,34 @@
+{
+  "name": "oclif-help",
+  "version": "1.0.0",
+  "description": "A custom help class for oclif.",
+  "main": "index.js",
+  "scripts": {
+    "build": "shx rm -rf lib && tsc -b",
+    "prepack": "npm run build && oclif manifest && oclif readme",
+    "postpack": "shx rm -r oclif.manifest.json",
+    "prepare": "npm run build",
+    "version": "oclif readme && git add README.md"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/oclif.manifest.json"
+  ],
+  "keywords": [],
+  "author": "Souvikns",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "oclif": "^4.6.1",
+    "shx": "^0.3.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@oclif/core": "^3.25.3"
+  },
+  "oclif": {
+    "bin": "oclif",
+    "commands": "./lib/commands"
+  }
+}

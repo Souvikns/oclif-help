@@ -39,6 +39,7 @@ export default class CustomHelp extends Help {
 
   protected async showRootHelp(): Promise<void> {
     this.log('Root help')
+    console.log(this.sortedCommands, this.sortedTopics)
   }
 }
 

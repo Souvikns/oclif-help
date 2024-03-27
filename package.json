@@ -31,6 +31,7 @@
   "oclif": {
     "bin": "oclif",
     "commands": "./lib/commands",
-    "helpClass": "./lib/customHelp.js"
+    "helpClass": "./lib/customHelp.js",
+    "topicSeparator": " "
   }
 }

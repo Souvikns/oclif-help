@@ -4,6 +4,7 @@ import { Config, Topic } from '@oclif/core/lib/interfaces'
 import { colorize } from '@oclif/core/lib/cli-ux'
 
 export default class CustomHelp extends Help {
+
   async showHelp(argv: string[]): Promise<void> {
     const originalArgv = argv.slice(1)
     argv = argv.filter(
@@ -29,6 +30,12 @@ export default class CustomHelp extends Help {
       }
       await this.showCommandHelp(command)
     }
+
+    const topic = this.config.findTopic(subject)
+    if (topic) {
+      await this.showTopicHelp(topic)
+      return
+    }
   }
 
   async showRootHelp(): Promise<void> {
@@ -52,11 +59,6 @@ export default class CustomHelp extends Help {
       rootCommands = rootCommands.filter((c) => !c.id.includes(':'))
     }
 
-    // if (rootTopics.length > 0) {
-    //   this.log(this.formatTopics(rootTopics))
-    //   this.log('')
-    // }
-
     if (rootCommands.length > 0 && rootTopics.length > 0) {
       rootCommands = rootCommands.filter((c) => c.id)
       this.log(this.formatCommandsAndTopics(rootCommands, rootTopics))
@@ -65,6 +67,7 @@ export default class CustomHelp extends Help {
   }
 
   protected formatCommandsAndTopics(
+
     commands: Command.Loadable[],
     topics: Topic[]
   ): string {
@@ -102,6 +105,7 @@ export default class CustomHelp extends Help {
 
     return this.section(colorize('cyan', 'COMMANDS'), body)
   }
+
 }
 
 function getHelpFlagAdditions(config: Config) {
